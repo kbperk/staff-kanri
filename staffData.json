@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "KB君",
+    "front": {
+      "image": "https://kbperk.github.io/staff-kanri/staff1_front.jpg?v=1772159069428",
+      "q1_label": "キャッチコピー",
+      "q1_val": "元気なkb",
+      "q2_label": "自己紹介",
+      "q2_val": "元気が有り余ってどうしようもない"
+    },
+    "back": {
+      "image": "https://kbperk.github.io/staff-kanri/staff1_back.jpg?v=1772159070396",
+      "q1_label": "裏の通り名",
+      "q1_val": "元気な破壊王",
+      "q2_label": "おふざけコメント",
+      "q2_val": "一日に5回壁に衝突し壊す"
+    }
+  }
+]
