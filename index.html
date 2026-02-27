@@ -6,7 +6,6 @@
     <title>KB PARK | スタッフ紹介</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 💡 追加：すべての要素の余白や枠線が幅をはみ出さないようにする絶対ルール */
         *, *::before, *::after { box-sizing: border-box; }
 
         /* =====================================
@@ -54,7 +53,7 @@
         .staff-face { 
             position: absolute; width: 100%; height: 100%; backface-visibility: hidden; 
             border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
-            background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.85)), url('bg-card.png'); /* 画像名に注意 */
+            background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.85)), url('bg-card.png');
             background-size: cover; background-position: center;
             backdrop-filter: blur(10px); display: flex; flex-direction: column; border: 3px solid rgba(255,255,255,0.8); 
         }
@@ -76,7 +75,6 @@
         .staff-face-front .q-label { background: #32D74B; }
         .staff-face-back .q-label { background: #FF3B30; }
         
-        /* 💡 追加：文字が長すぎても枠からはみ出ないように折り返す */
         .q-val { font-size: 1rem; font-weight: bold; color: #444; white-space: pre-wrap; word-break: break-word; line-height: 1.6; background: rgba(255,255,255,0.75); padding: 12px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
         .tap-hint { background: white; color: #333; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: bounce-soft 1.5s infinite; }
@@ -91,16 +89,14 @@
            📱 スマホ向けの超最適化レイアウト
            ===================================== */
         @media (max-width: 600px) {
-            /* 💡 カードの幅を85%に抑え、高さをしっかり確保して見切れを防ぐ */
             .carousel-drum { width: 85%; height: 520px; } 
-            
             .staff-body { flex-direction: column; align-items: center; text-align: center; gap: 15px; padding: 15px 10px; }
-            /* 💡 画像を丸形にし、サイズを完全固定してレイアウト崩れを防ぐ */
-            .staff-img-wrap { flex: 0 0 auto; width: 130px; height: 130px; aspect-ratio: 1/1; border-radius: 50%; margin-top: 0; }
+            
+            /* 💡 修正：スマホでも丸くせず、PC同様に四角（角丸15px）で比率3:4のまま調整 */
+            .staff-img-wrap { flex: 0 0 auto; width: 140px; height: auto; aspect-ratio: 3/4; border-radius: 15px; margin-top: 0; }
+            
             .staff-text-wrap { width: 100%; gap: 12px; }
             .q-val { font-size: 0.95rem; padding: 10px; }
-            
-            /* タイトルとヘッダー文字を少しスッキリさせる */
             .text-3d-title { font-size: 2rem; }
             .staff-header { font-size: 1.2rem; padding: 12px 15px; }
             .tap-hint { padding: 4px 8px; font-size: 0.75rem; }
@@ -157,7 +153,6 @@
             totalCards = displayStaff.length;
 
             anglePerCard = 360 / totalCards;
-            // Radius calculation for the drum
             radius = Math.round((450 / 2) / Math.tan(Math.PI / totalCards)) + 60; 
 
             drum.innerHTML = "";
@@ -199,7 +194,6 @@
         }
 
         function updateDrum() {
-            // 💡 超重要修正：カメラを引き算（translateZ(-radius)）して、フロントのカードが絶対に拡大しない（横幅オーバーしない）ように制御
             drum.style.transform = `translateZ(${-radius}px) rotateX(${-currentAngle}deg)`;
             
             const normalizedDrumAngle = ((currentAngle % 360) + 360) % 360;
@@ -268,7 +262,8 @@
             scene.addEventListener('touchmove', e => {
                 if(!isDragging) return;
                 const deltaY = e.touches[0].clientY - startY;
-                currentAngle = startAngle - (deltaY * 0.4); 
+                // 💡 修正： - を + に変更し、スワイプ方向を逆転（物理ローラーのような直感的な操作感に）
+                currentAngle = startAngle + (deltaY * 0.4); 
                 updateDrum();
             }, { passive: true });
 
@@ -285,7 +280,8 @@
             window.addEventListener('mousemove', e => {
                 if(!isDragging) return;
                 const deltaY = e.clientY - startY;
-                currentAngle = startAngle - (deltaY * 0.4);
+                // 💡 修正： - を + に変更（マウス操作も逆転）
+                currentAngle = startAngle + (deltaY * 0.4);
                 updateDrum();
             });
 
@@ -294,7 +290,8 @@
             scene.addEventListener('wheel', e => {
                 if(e.target.closest('.js-prevent-scroll') && e.target.closest('.js-prevent-scroll').scrollHeight > e.target.closest('.js-prevent-scroll').clientHeight) return;
                 drum.classList.remove('is-snapping');
-                currentAngle += e.deltaY * 0.1;
+                // 💡 修正： + を - に変更（PCのマウスホイールも逆転）
+                currentAngle -= e.deltaY * 0.1;
                 updateDrum();
                 clearTimeout(scene.wheelTimeout);
                 scene.wheelTimeout = setTimeout(snapToNearest, 150);
