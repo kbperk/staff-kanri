@@ -6,10 +6,13 @@
     <title>KB PARK | スタッフ紹介</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* 💡 追加：すべての要素の余白や枠線が幅をはみ出さないようにする絶対ルール */
+        *, *::before, *::after { box-sizing: border-box; }
+
         /* =====================================
            背景のリッチな装飾（ふわふわ漂う円）
            ===================================== */
-        body { margin: 0; overflow: hidden; background-color: #F0FFF4; touch-action: none; font-family: 'Zen Maru Gothic', sans-serif; }
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #F0FFF4; touch-action: none; font-family: 'Zen Maru Gothic', sans-serif; }
         .bg-blobs { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
         .blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.5; animation: float 10s infinite ease-in-out alternate; }
         .blob-1 { width: 300px; height: 300px; background: #32D74B; top: -50px; left: -100px; }
@@ -48,16 +51,11 @@
         .staff-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; }
         .staff-card-inner.is-flipped { transform: rotateY(180deg); }
 
-        /* 💡 ここを変更！ カードの背景に画像と半透明の白ベールを追加 */
         .staff-face { 
             position: absolute; width: 100%; height: 100%; backface-visibility: hidden; 
             border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
-            
-            /* 背景画像 ＋ 70〜85%の白いフィルターを重ねて文字を読みやすくする */
-            background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.85)), url('簡単な背景.png');
-            background-size: cover;
-            background-position: center;
-            
+            background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.85)), url('bg-card.png'); /* 画像名に注意 */
+            background-size: cover; background-position: center;
             backdrop-filter: blur(10px); display: flex; flex-direction: column; border: 3px solid rgba(255,255,255,0.8); 
         }
         .staff-face-back { transform: rotateY(180deg); }
@@ -78,8 +76,8 @@
         .staff-face-front .q-label { background: #32D74B; }
         .staff-face-back .q-label { background: #FF3B30; }
         
-        /* テキストの背景も少し白を強めて読みやすさMAXに */
-        .q-val { font-size: 1rem; font-weight: bold; color: #444; white-space: pre-wrap; line-height: 1.6; background: rgba(255,255,255,0.75); padding: 12px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        /* 💡 追加：文字が長すぎても枠からはみ出ないように折り返す */
+        .q-val { font-size: 1rem; font-weight: bold; color: #444; white-space: pre-wrap; word-break: break-word; line-height: 1.6; background: rgba(255,255,255,0.75); padding: 12px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
         .tap-hint { background: white; color: #333; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: bounce-soft 1.5s infinite; }
         @keyframes bounce-soft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
@@ -89,13 +87,23 @@
 
         .page-title { position: absolute; top: 30px; left: 0; width: 100%; text-align: center; z-index: 100; pointer-events: none; }
 
+        /* =====================================
+           📱 スマホ向けの超最適化レイアウト
+           ===================================== */
         @media (max-width: 600px) {
-            .carousel-drum { height: 500px; } 
-            .staff-body { flex-direction: column; align-items: center; text-align: center; gap: 15px; padding: 15px; }
-            .staff-img-wrap { flex: 0 0 auto; width: 45%; aspect-ratio: 1/1; border-radius: 50%; margin-top: -5px; }
-            .staff-text-wrap { width: 100%; gap: 15px; }
-            .q-val { font-size: 0.9rem; padding: 10px; }
-            .text-3d-title { font-size: 2.2rem; }
+            /* 💡 カードの幅を85%に抑え、高さをしっかり確保して見切れを防ぐ */
+            .carousel-drum { width: 85%; height: 520px; } 
+            
+            .staff-body { flex-direction: column; align-items: center; text-align: center; gap: 15px; padding: 15px 10px; }
+            /* 💡 画像を丸形にし、サイズを完全固定してレイアウト崩れを防ぐ */
+            .staff-img-wrap { flex: 0 0 auto; width: 130px; height: 130px; aspect-ratio: 1/1; border-radius: 50%; margin-top: 0; }
+            .staff-text-wrap { width: 100%; gap: 12px; }
+            .q-val { font-size: 0.95rem; padding: 10px; }
+            
+            /* タイトルとヘッダー文字を少しスッキリさせる */
+            .text-3d-title { font-size: 2rem; }
+            .staff-header { font-size: 1.2rem; padding: 12px 15px; }
+            .tap-hint { padding: 4px 8px; font-size: 0.75rem; }
         }
     </style>
 </head>
@@ -149,6 +157,7 @@
             totalCards = displayStaff.length;
 
             anglePerCard = 360 / totalCards;
+            // Radius calculation for the drum
             radius = Math.round((450 / 2) / Math.tan(Math.PI / totalCards)) + 60; 
 
             drum.innerHTML = "";
@@ -190,7 +199,9 @@
         }
 
         function updateDrum() {
-            drum.style.transform = `rotateX(${-currentAngle}deg)`;
+            // 💡 超重要修正：カメラを引き算（translateZ(-radius)）して、フロントのカードが絶対に拡大しない（横幅オーバーしない）ように制御
+            drum.style.transform = `translateZ(${-radius}px) rotateX(${-currentAngle}deg)`;
+            
             const normalizedDrumAngle = ((currentAngle % 360) + 360) % 360;
             const cards = document.querySelectorAll('.js-card');
             
