@@ -2,138 +2,300 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KB PARK | 愉快なスタッフたち</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KB PARK | スタッフ紹介</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .staff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; padding: 20px; max-width: 1000px; margin: 0 auto; padding-bottom: 50px; }
-        .staff-card-container { perspective: 1000px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-        .staff-card-inner { position: relative; width: 100%; height: 480px; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; }
-        
-        .is-jumping-to-back { animation: jumpFlipBack 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
-        .is-jumping-to-front { animation: jumpFlipFront 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
+        /* =====================================
+           背景のリッチな装飾（ふわふわ漂う円）
+           ===================================== */
+        body { margin: 0; overflow: hidden; background-color: #F0FFF4; touch-action: none; font-family: 'Zen Maru Gothic', sans-serif; }
+        .bg-blobs { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.5; animation: float 10s infinite ease-in-out alternate; }
+        .blob-1 { width: 300px; height: 300px; background: #32D74B; top: -50px; left: -100px; }
+        .blob-2 { width: 400px; height: 400px; background: #30D5C8; bottom: -100px; right: -150px; animation-delay: -5s; }
+        .blob-3 { width: 250px; height: 250px; background: #FFD60A; top: 40%; left: 50%; animation-delay: -2s; }
+        @keyframes float { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(50px) scale(1.1); } }
 
-        @keyframes jumpFlipBack {
-            0% { transform: translateY(0) rotateY(0deg); }
-            50% { transform: translateY(-120px) rotateY(90deg) scale(1.1); }
-            100% { transform: translateY(0) rotateY(180deg); }
+        /* =====================================
+           立体文字（3Dポップ）のデザイン
+           ===================================== */
+        .text-3d-title {
+            color: #32D74B; font-size: 2.8rem; margin: 0; letter-spacing: 2px;
+            text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff, 3px 3px 0 #000, 4px 4px 0 #000, 5px 5px 0 #000;
         }
-        @keyframes jumpFlipFront {
-            0% { transform: translateY(0) rotateY(180deg); }
-            50% { transform: translateY(-120px) rotateY(90deg) scale(1.1); }
-            100% { transform: translateY(0) rotateY(0deg); }
+        .text-3d-name {
+            color: #fff; letter-spacing: 1px;
+            text-shadow: -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333, 2px 3px 2px rgba(0,0,0,0.4);
         }
+        .badge-3d {
+            box-shadow: 0 4px 0 #228b22, 0 5px 5px rgba(0,0,0,0.3);
+            transform: translateY(-2px); border: 2px solid white;
+        }
+        .staff-face-back .badge-3d { box-shadow: 0 4px 0 #b30000, 0 5px 5px rgba(0,0,0,0.3); }
 
-        .staff-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 2rem; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 20px rgba(0,0,0,0.15); border-bottom: 8px solid #32D74B; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); }
-        .staff-face-back { transform: rotateY(180deg); border-bottom-color: #FF3B30; }
+        /* =====================================
+           3Dロータリー（シリンダーカルーセル）
+           ===================================== */
+        .scene { position: relative; width: 100vw; height: 100vh; perspective: 1500px; display: flex; justify-content: center; align-items: center; }
+        .carousel-drum { position: relative; width: 90%; max-width: 700px; height: 450px; transform-style: preserve-3d; transition: transform 0.1s; }
+        .carousel-drum.is-snapping { transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
 
-        .staff-img { width: 100%; height: 220px; object-fit: cover; background: #eee; }
-        .staff-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; overflow-y: auto; }
+        .staff-card-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-style: preserve-3d; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: opacity 0.5s, filter 0.5s; }
+        .staff-card-container.is-dimmed { opacity: 0.2; filter: blur(5px); pointer-events: none; }
+        .staff-card-container.is-active { opacity: 1; filter: blur(0px); pointer-events: auto; z-index: 10; }
+
+        .staff-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; }
+        .staff-card-inner.is-flipped { transform: rotateY(180deg); }
+
+        /* 💡 ここを変更！ カードの背景に画像と半透明の白ベールを追加 */
+        .staff-face { 
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden; 
+            border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
+            
+            /* 背景画像 ＋ 70〜85%の白いフィルターを重ねて文字を読みやすくする */
+            background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.85)), url('簡単な背景.png');
+            background-size: cover;
+            background-position: center;
+            
+            backdrop-filter: blur(10px); display: flex; flex-direction: column; border: 3px solid rgba(255,255,255,0.8); 
+        }
+        .staff-face-back { transform: rotateY(180deg); }
+
+        .staff-header { width: 100%; padding: 15px 20px; color: white; font-size: 1.5rem; font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
+        .staff-face-front .staff-header { background: linear-gradient(135deg, #32D74B, #28a745); }
+        .staff-face-back .staff-header { background: linear-gradient(135deg, #FF3B30, #c0392b); }
+
+        .staff-body { display: flex; flex-direction: row; padding: 20px; gap: 20px; align-items: flex-start; height: 100%; overflow-y: auto; overscroll-behavior: contain; }
+        .staff-body::-webkit-scrollbar { display: none; } 
+        .staff-body { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .staff-img-wrap { flex: 0 0 35%; max-width: 200px; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 4px solid white; aspect-ratio: 3/4; background: #eee; }
+        .staff-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .staff-text-wrap { flex: 1; display: flex; flex-direction: column; gap: 20px; padding-bottom: 20px; }
+
+        .q-label { font-size: 0.9rem; color: #fff; padding: 6px 15px; border-radius: 20px; display: inline-block; margin-bottom: 8px; font-weight: bold; }
+        .staff-face-front .q-label { background: #32D74B; }
+        .staff-face-back .q-label { background: #FF3B30; }
         
-        .staff-name { font-size: 1.5rem; font-weight: bold; text-align: center; margin-bottom: 15px; }
-        .q-box { margin-bottom: 12px; }
-        .q-label { font-size: 0.8rem; color: #fff; padding: 3px 10px; border-radius: 12px; display: inline-block; margin-bottom: 6px; }
-        .q-val { font-size: 0.95rem; font-weight: bold; color: #444; white-space: pre-wrap; line-height: 1.4; }
-        .tap-hint { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; animation: bounce-soft 1.5s infinite; z-index: 10; pointer-events: none; color: #32D74B; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        /* テキストの背景も少し白を強めて読みやすさMAXに */
+        .q-val { font-size: 1rem; font-weight: bold; color: #444; white-space: pre-wrap; line-height: 1.6; background: rgba(255,255,255,0.75); padding: 12px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        .tap-hint { background: white; color: #333; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: bounce-soft 1.5s infinite; }
+        @keyframes bounce-soft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        .btn-back { position: fixed; bottom: 30px; right: 20px; background: #333; color: white; text-decoration: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; font-size: 1rem; box-shadow: 0 6px 15px rgba(0,0,0,0.3); z-index: 1000; display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
+        .btn-back:active { transform: scale(0.95); }
+
+        .page-title { position: absolute; top: 30px; left: 0; width: 100%; text-align: center; z-index: 100; pointer-events: none; }
+
+        @media (max-width: 600px) {
+            .carousel-drum { height: 500px; } 
+            .staff-body { flex-direction: column; align-items: center; text-align: center; gap: 15px; padding: 15px; }
+            .staff-img-wrap { flex: 0 0 auto; width: 45%; aspect-ratio: 1/1; border-radius: 50%; margin-top: -5px; }
+            .staff-text-wrap { width: 100%; gap: 15px; }
+            .q-val { font-size: 0.9rem; padding: 10px; }
+            .text-3d-title { font-size: 2.2rem; }
+        }
     </style>
 </head>
-<body class="fixed-bg-container">
+<body>
+    
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div>
+    </div>
 
-    <header style="text-align: center; padding: 50px 20px 20px;">
-        <h1 class="text-stroke-white text-shadow-heavy dancing-text" style="color: #32D74B; font-size: 2.5rem;">愉快なスタッフたち！</h1>
-        <p style="font-weight: bold; margin-top: 10px; background: rgba(255,255,255,0.6); display: inline-block; padding: 5px 15px; border-radius: 20px;">カードをタップすると…！？</p>
-    </header>
+    <div class="page-title">
+        <h1 class="text-3d-title">スタッフ紹介</h1>
+    </div>
 
-    <main id="staff-app" class="staff-grid">
-        <p style="text-align:center; width:100%; font-weight:bold;">スタッフ情報を読み込み中...🚀</p>
-    </main>
+    <div class="scene" id="scene">
+        <div class="carousel-drum" id="drum">
+            <p style="text-align:center; font-weight:bold; padding-top:150px;">スタッフ情報を読み込み中...🚀</p>
+        </div>
+    </div>
+
+    <a href="https://kbperk.github.io/main/" class="btn-back"><span>◀</span> メインに戻る</a>
 
     <script>
-        // ▼▼ 新しいリポジトリのURLに変更してください！ ▼▼
-        const GITHUB_JSON_URL = "https://kbperk.github.io/staff-kanri//staffData.json"; 
+        const GITHUB_JSON_URL = "https://kbperk.github.io/staff-kanri/staffData.json"; 
+
+        let currentAngle = 0;
+        let anglePerCard = 0;
+        let radius = 0;
+        let isDragging = false;
+        let startY = 0;
+        let startAngle = 0;
+        let drum = document.getElementById('drum');
+        let totalCards = 0;
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const res = await fetch(GITHUB_JSON_URL + '?v=' + new Date().getTime());
-                if (!res.ok) throw new Error("Network response was not ok");
+                if (!res.ok) throw new Error("Network error");
                 const staffData = await res.json();
-                renderStaff(staffData);
+                renderDrum(staffData);
             } catch (err) {
-                console.error(err);
-                document.getElementById('staff-app').innerHTML = '<p style="text-align:center; width:100%; color:red; font-weight:bold;">スタッフ情報の読み込みに失敗しました🙇‍♂️<br>管理画面からデータを一度保存してください。</p>';
+                drum.innerHTML = '<p style="text-align:center; color:red; font-weight:bold; padding-top:150px;">読み込みに失敗しました🙇‍♂️</p>';
             }
         });
 
-        function renderStaff(data) {
-            const container = document.getElementById('staff-app');
-            container.innerHTML = "";
+        function renderDrum(data) {
+            let validStaff = data.filter(s => s.name);
+            if(validStaff.length === 0) { drum.innerHTML = '<p style="text-align:center; padding-top:150px;">スタッフ情報がありません。</p>'; return; }
 
-            let count = 0;
-            data.forEach((staff, index) => {
-                if(!staff.name) return;
-                count++;
+            let displayStaff = [...validStaff];
+            while (displayStaff.length < 5) { displayStaff = displayStaff.concat(validStaff); }
+            totalCards = displayStaff.length;
 
-                const delay = index * 100;
-                const f = staff.front || {};
-                const b = staff.back || {};
+            anglePerCard = 360 / totalCards;
+            radius = Math.round((450 / 2) / Math.tan(Math.PI / totalCards)) + 60; 
 
+            drum.innerHTML = "";
+            displayStaff.forEach((staff, index) => {
+                const f = staff.front || {}; const b = staff.back || {};
+                const cardAngle = index * anglePerCard;
+                
                 const cardHTML = `
-                <div class="staff-card-container js-scroll fade-up" style="transition-delay: ${delay}ms;" onclick="flipCard(this)">
+                <div class="staff-card-container js-card" style="transform: rotateX(${cardAngle}deg) translateZ(${radius}px);" data-index="${index}" onclick="handleCardTap(${index}, event)">
                     <div class="staff-card-inner">
-                        <div class="staff-face glass-panel-light">
-                            <div class="tap-hint">👆 タップ！</div>
-                            <img src="${f.image || 'https://via.placeholder.com/400x300?text=No+Image'}" class="staff-img" alt="${staff.name}">
-                            <div class="staff-info">
-                                <div class="staff-name text-stroke-white" style="color: #32D74B;">${staff.name}</div>
-                                <div class="q-box">
-                                    <div class="q-label" style="background: #32D74B;">${f.q1_label || 'キャッチコピー'}</div>
-                                    <div class="q-val">${f.q1_val || ''}</div>
-                                </div>
-                                <div class="q-box">
-                                    <div class="q-label" style="background: #32D74B;">${f.q2_label || '自己紹介'}</div>
-                                    <div class="q-val">${f.q2_val || ''}</div>
+                        <div class="staff-face staff-face-front">
+                            <div class="staff-header"><span class="text-3d-name">${staff.name}</span><span class="tap-hint">👆 タップ！</span></div>
+                            <div class="staff-body js-prevent-scroll">
+                                <div class="staff-img-wrap"><img src="${f.image || 'https://via.placeholder.com/400x500?text=No+Image'}"></div>
+                                <div class="staff-text-wrap">
+                                    <div><div class="q-label badge-3d">${f.q1_label || 'キャッチコピー'}</div><div class="q-val">${f.q1_val || ''}</div></div>
+                                    <div><div class="q-label badge-3d">${f.q2_label || '自己紹介'}</div><div class="q-val">${f.q2_val || ''}</div></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="staff-face staff-face-back glass-panel-light">
-                            <img src="${b.image || 'https://via.placeholder.com/400x300?text=No+Image'}" class="staff-img" alt="${staff.name}の裏の顔">
-                            <div class="staff-info">
-                                <div class="staff-name text-stroke-white" style="color: #FF3B30;">${staff.name} (裏)</div>
-                                <div class="q-box">
-                                    <div class="q-label" style="background: #FF3B30;">${b.q1_label || '裏の通り名'}</div>
-                                    <div class="q-val">${b.q1_val || ''}</div>
-                                </div>
-                                <div class="q-box">
-                                    <div class="q-label" style="background: #FF3B30;">${b.q2_label || 'おふざけコメント'}</div>
-                                    <div class="q-val">${b.q2_val || ''}</div>
+                        <div class="staff-face staff-face-back">
+                            <div class="staff-header"><span class="text-3d-name">${staff.name} (裏の顔)</span><span class="tap-hint" style="background:#fff; color:#FF3B30;">👆 もどす</span></div>
+                            <div class="staff-body js-prevent-scroll">
+                                <div class="staff-img-wrap" style="border-color: #ffeaea;"><img src="${b.image || 'https://via.placeholder.com/400x500?text=No+Image'}"></div>
+                                <div class="staff-text-wrap">
+                                    <div><div class="q-label badge-3d">${b.q1_label || '裏の通り名'}</div><div class="q-val">${b.q1_val || ''}</div></div>
+                                    <div><div class="q-label badge-3d">${b.q2_label || 'おふざけコメント'}</div><div class="q-val">${b.q2_val || ''}</div></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                `;
-                container.insertAdjacentHTML('beforeend', cardHTML);
+                </div>`;
+                drum.insertAdjacentHTML('beforeend', cardHTML);
             });
 
-            if (count === 0) {
-                 container.innerHTML = '<p style="text-align:center; width:100%;">スタッフ情報がまだ登録されていません。</p>';
-            }
-            
-            if(typeof initScrollAnimations === 'function') initScrollAnimations();
-            if(typeof initDancingText === 'function') initDancingText();
+            updateDrum();
+            initDragEvents();
+            initCardScroll();
         }
 
-        function flipCard(element) {
-            const inner = element.querySelector('.staff-card-inner');
-            inner.classList.remove('is-jumping-to-back', 'is-jumping-to-front');
-            void inner.offsetWidth; 
-            if (element.dataset.flipped === "true") {
-                inner.classList.add('is-jumping-to-front');
-                element.dataset.flipped = "false";
+        function updateDrum() {
+            drum.style.transform = `rotateX(${-currentAngle}deg)`;
+            const normalizedDrumAngle = ((currentAngle % 360) + 360) % 360;
+            const cards = document.querySelectorAll('.js-card');
+            
+            cards.forEach((card, i) => {
+                const cardAngle = i * anglePerCard;
+                let diff = Math.abs((cardAngle - normalizedDrumAngle) % 360);
+                if (diff > 180) diff = 360 - diff;
+
+                if (diff < (anglePerCard / 2)) {
+                    card.classList.add('is-active');
+                    card.classList.remove('is-dimmed');
+                } else {
+                    card.classList.remove('is-active');
+                    card.classList.add('is-dimmed');
+                    card.querySelector('.staff-card-inner').classList.remove('is-flipped'); 
+                }
+            });
+        }
+
+        function handleCardTap(index, event) {
+            if(isDragging) return;
+            const targetAngle = index * anglePerCard;
+            let diff = Math.abs((targetAngle - ((currentAngle % 360) + 360) % 360) % 360);
+            if (diff > 180) diff = 360 - diff;
+
+            if (diff < 10) {
+                const inner = document.querySelectorAll('.js-card')[index].querySelector('.staff-card-inner');
+                inner.classList.toggle('is-flipped');
             } else {
-                inner.classList.add('is-jumping-to-back');
-                element.dataset.flipped = "true";
+                drum.classList.add('is-snapping');
+                let currentMod = currentAngle % 360;
+                if(currentMod < 0) currentMod += 360;
+                let moveDist = targetAngle - currentMod;
+                if(moveDist > 180) moveDist -= 360;
+                if(moveDist < -180) moveDist += 360;
+                currentAngle += moveDist;
+                updateDrum();
+                setTimeout(() => { drum.classList.remove('is-snapping'); }, 600);
             }
+        }
+
+        function initCardScroll() {
+            const scrollAreas = document.querySelectorAll('.js-prevent-scroll');
+            scrollAreas.forEach(area => {
+                area.addEventListener('touchmove', (e) => {
+                    if (area.scrollHeight > area.clientHeight) {
+                        e.stopPropagation(); 
+                    }
+                }, { passive: true });
+            });
+        }
+
+        function initDragEvents() {
+            const scene = document.getElementById('scene');
+            
+            scene.addEventListener('touchstart', e => {
+                if(e.target.closest('.js-prevent-scroll') && e.target.closest('.js-prevent-scroll').scrollHeight > e.target.closest('.js-prevent-scroll').clientHeight) return;
+                isDragging = true;
+                startY = e.touches[0].clientY;
+                startAngle = currentAngle;
+                drum.classList.remove('is-snapping');
+            }, { passive: true });
+
+            scene.addEventListener('touchmove', e => {
+                if(!isDragging) return;
+                const deltaY = e.touches[0].clientY - startY;
+                currentAngle = startAngle - (deltaY * 0.4); 
+                updateDrum();
+            }, { passive: true });
+
+            scene.addEventListener('touchend', snapToNearest);
+
+            scene.addEventListener('mousedown', e => {
+                if(e.target.closest('.js-prevent-scroll') && e.target.closest('.js-prevent-scroll').scrollHeight > e.target.closest('.js-prevent-scroll').clientHeight) return;
+                isDragging = true;
+                startY = e.clientY;
+                startAngle = currentAngle;
+                drum.classList.remove('is-snapping');
+            });
+
+            window.addEventListener('mousemove', e => {
+                if(!isDragging) return;
+                const deltaY = e.clientY - startY;
+                currentAngle = startAngle - (deltaY * 0.4);
+                updateDrum();
+            });
+
+            window.addEventListener('mouseup', () => { if(isDragging) snapToNearest(); });
+            
+            scene.addEventListener('wheel', e => {
+                if(e.target.closest('.js-prevent-scroll') && e.target.closest('.js-prevent-scroll').scrollHeight > e.target.closest('.js-prevent-scroll').clientHeight) return;
+                drum.classList.remove('is-snapping');
+                currentAngle += e.deltaY * 0.1;
+                updateDrum();
+                clearTimeout(scene.wheelTimeout);
+                scene.wheelTimeout = setTimeout(snapToNearest, 150);
+            }, { passive: true });
+        }
+
+        function snapToNearest() {
+            isDragging = false;
+            drum.classList.add('is-snapping');
+            currentAngle = Math.round(currentAngle / anglePerCard) * anglePerCard;
+            updateDrum();
+            setTimeout(() => { drum.classList.remove('is-snapping'); }, 600);
         }
     </script>
 </body>
