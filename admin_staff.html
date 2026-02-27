@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KB PARK スタッフ管理</title>
+    <style>
+        body { font-family: sans-serif; background: #f0fff4; color: #333; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; display: none; }
+        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-left: 6px solid #ccc; }
+        .card.active { border-left-color: #32D74B; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+        .side-box { padding: 15px; border-radius: 8px; background: #f9f9f9; border: 1px solid #eee; }
+        .side-box.front { border-top: 4px solid #3498db; }
+        .side-box.back { border-top: 4px solid #e74c3c; }
+        label { display: block; margin-top: 10px; font-weight: bold; font-size: 0.9em; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .btn-submit { background: #32D74B; color: white; border: none; padding: 15px 40px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: block; margin: 30px auto; width: 100%; max-width: 300px;}
+        #login-screen { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div id="login-screen">
+        <h2>スタッフ管理 ログイン</h2>
+        <input type="password" id="auth-password" placeholder="パスワード(0126)" style="text-align:center;">
+        <button onclick="tryLogin()" style="margin-top:20px; padding:10px 20px;">ログイン</button>
+        <div id="login-msg" style="color:red; margin-top:10px;"></div>
+    </div>
+
+    <div id="main-interface" class="container">
+        <h2 style="text-align: center; color: #32D74B;">スタッフ紹介 更新画面</h2>
+        <form id="mainForm">
+            <div id="form-container">読み込み中...</div>
+            <button type="button" class="btn-submit" id="submitBtn" onclick="uploadData()">一括更新する</button>
+            <div id="status" style="text-align: center; font-weight: bold; margin-top: 15px;"></div>
+        </form>
+    </div>
+
+    <script>
+        // ▼▼ いただいたGASのURLをセットしました ▼▼
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxi-IvH67zp80Mp_whc2pltvRQR1aRvNeMAREGwvIbCz3gAp59M18SMtvC8tDEx6Ti9Kg/exec";
+
+        async function callApi(action, payload = {}) {
+            const pass = document.getElementById('auth-password').value;
+            const res = await fetch(GAS_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action, auth: pass, payload })
+            });
+            const json = await res.json();
+            if (!json.success) throw new Error(json.error);
+            return json.data;
+        }
+
+        async function tryLogin() {
+            const btn = document.querySelector('#login-screen button');
+            const msg = document.getElementById('login-msg');
+            msg.innerText = "";
+            btn.innerText = "認証中...";
+            btn.disabled = true;
+
+            try {
+                const data = await callApi('getStaffData');
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-interface').style.display = 'block';
+                createForm(data);
+            } catch (err) { 
+                msg.innerText = err.message; 
+                btn.innerText = "ログイン";
+                btn.disabled = false;
+            }
+        }
+
+        function createForm(currentData) {
+            const container = document.getElementById('form-container');
+            container.innerHTML = ""; 
+
+            for (let i = 1; i <= 10; i++) {
+                const d = currentData.find(x => x.id === i) || { front: {}, back: {} };
+                const f = d.front || {}; const b = d.back || {};
+                
+                const html = `
+                  <div class="card ${d.name ? 'active' : ''}">
+                    <h3>枠 ${i} ${d.name ? `(${d.name})` : '(未登録)'}</h3>
+                    <label>スタッフ名</label>
+                    <input type="text" name="name_${i}" value="${d.name || ''}" placeholder="名前を入力（空にすると削除）">
+                    
+                    <div class="grid-2" style="margin-top:15px;">
+                        <div class="side-box front">
+                            <h4 style="margin:0 0 10px; color:#3498db;">【表】マジメモード</h4>
+                            <label>画像1</label><input type="file" accept="image/*" onchange="handleFile(this, 'front', ${i})">
+                            <input type="hidden" name="file_front_${i}" id="file_front_${i}">
+                            <label>質問1 ラベル</label><input type="text" name="f_q1_label_${i}" value="${f.q1_label || 'キャッチコピー'}">
+                            <label>質問1 回答</label><input type="text" name="f_q1_val_${i}" value="${f.q1_val || ''}">
+                            <label>質問2 ラベル</label><input type="text" name="f_q2_label_${i}" value="${f.q2_label || '自己紹介'}">
+                            <label>質問2 回答</label><input type="text" name="f_q2_val_${i}" value="${f.q2_val || ''}">
+                        </div>
+                        <div class="side-box back">
+                            <h4 style="margin:0 0 10px; color:#e74c3c;">【裏】おふざけモード</h4>
+                            <label>画像2</label><input type="file" accept="image/*" onchange="handleFile(this, 'back', ${i})">
+                            <input type="hidden" name="file_back_${i}" id="file_back_${i}">
+                            <label>質問1 ラベル</label><input type="text" name="b_q1_label_${i}" value="${b.q1_label || '裏の通り名'}">
+                            <label>質問1 回答</label><input type="text" name="b_q1_val_${i}" value="${b.q1_val || ''}">
+                            <label>質問2 ラベル</label><input type="text" name="b_q2_label_${i}" value="${b.q2_label || 'おふざけコメント'}">
+                            <label>質問2 回答</label><input type="text" name="b_q2_val_${i}" value="${b.q2_val || ''}">
+                        </div>
+                    </div>
+                  </div>`;
+                container.insertAdjacentHTML('beforeend', html);
+            }
+        }
+
+        function handleFile(input, type, index) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => document.getElementById(`file_${type}_${index}`).value = e.target.result.split(',')[1];
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById(`file_${type}_${index}`).value = "";
+            }
+        }
+
+        async function uploadData() {
+            if(!confirm("更新しますか？")) return;
+            const btn = document.getElementById('submitBtn');
+            const status = document.getElementById('status');
+            btn.innerText = "送信中..."; btn.disabled = true;
+            status.innerText = "";
+            
+            const formData = {};
+            document.querySelectorAll('#mainForm input').forEach(inp => formData[inp.name] = inp.value);
+
+            try {
+                status.innerText = await callApi('saveStaffData', formData);
+                status.style.color = "green";
+            } catch(e) {
+                status.innerText = "エラー: " + e.message;
+                status.style.color = "red";
+            }
+            btn.innerText = "一括更新する"; btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
