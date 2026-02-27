@@ -21,14 +21,14 @@
     "id": 2,
     "name": "kbパンダ",
     "front": {
-      "image": "https://kbperk.github.io/staff-kanri/staff2_front.jpg?v=1772186538101",
+      "image": "https://kbperk.github.io/staff-kanri/staff2_front.jpg?v=1772187425333",
       "q1_label": "キャッチコピー",
       "q1_val": "kbパークのマスコット\n「福山市に舞い降りたキュートなパンダ」",
       "q2_label": "自己紹介",
       "q2_val": "自分マスコットとして泥臭く汗臭く頑張る次第で働いて働いて働いてまいります"
     },
     "back": {
-      "image": "https://kbperk.github.io/staff-kanri/staff2_back.jpg?v=1772186539219",
+      "image": "https://kbperk.github.io/staff-kanri/staff2_back.jpg?v=1772187426925",
       "q1_label": "裏の通り名",
       "q1_val": "笹を食わへん猛獣",
       "q2_label": "おふざけコメント",
@@ -39,14 +39,14 @@
     "id": 3,
     "name": "店長",
     "front": {
-      "image": "https://kbperk.github.io/staff-kanri/staff3_front.jpg?v=1772186544092",
+      "image": "https://kbperk.github.io/staff-kanri/staff3_front.jpg?v=1772187428539",
       "q1_label": "キャッチコピー",
       "q1_val": "笑顔は声から！この街の端まで届け！！\n「いこーぜ！！」",
       "q2_label": "自己紹介",
       "q2_val": "いつもごひいきにありがとうございます\n縁があってこの地にトランポリンパークをオープンさせていただきました\n福山市民の運動不足を楽しく解消させるために全力でお仕事させていただきます！！"
     },
     "back": {
-      "image": "https://kbperk.github.io/staff-kanri/staff3_back.jpg?v=1772186549415",
+      "image": "https://kbperk.github.io/staff-kanri/staff3_back.jpg?v=1772187434304",
       "q1_label": "裏の通り名",
       "q1_val": "元アフロビックヘッド",
       "q2_label": "おふざけコメント",
