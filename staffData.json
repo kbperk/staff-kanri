@@ -1,38 +1,20 @@
 [
   {
     "id": 1,
-    "name": "KB君",
+    "name": "店長",
     "front": {
-      "image": "https://kbperk.github.io/staff-kanri/staff1_front.jpg?v=1772199104479",
+      "image": "https://kbperk.github.io/staff-kanri/staff1_front.jpg?v=1773462932892",
       "q1_label": "キャッチコピー",
-      "q1_val": "元気なkb",
+      "q1_val": "笑顔は声から！この街の端まで届け！！\n「いこーぜ！！」",
       "q2_label": "自己紹介",
-      "q2_val": "元気が有り余ってどうしようもない"
+      "q2_val": "いつもごひいきにありがとうございます\n縁があってこの地にトランポリンパークをオープンさせていただきました\n福山市民の運動不足を楽しく解消させるために全力でお仕事させていただきます！！"
     },
     "back": {
-      "image": "https://kbperk.github.io/staff-kanri/staff1_back.jpg?v=1772199105511",
-      "q1_label": "裏の通り名",
-      "q1_val": "元気な破壊王",
-      "q2_label": "おふざけコメント",
-      "q2_val": "一日に5回壁に衝突しものを壊す\n壊した破片がアフロの中に入りシャンプーの時に出てくるらしい"
-    }
-  },
-  {
-    "id": 2,
-    "name": "kbパンダ",
-    "front": {
-      "image": "https://kbperk.github.io/staff-kanri/staff2_front.jpg?v=1772199106568",
-      "q1_label": "キャッチコピー",
-      "q1_val": "kbパークのマスコット\n「福山市に舞い降りたキュートなパンダ」",
+      "image": "https://kbperk.github.io/staff-kanri/staff1_back.jpg?v=1773462933911",
+      "q1_label": "キャラクター名",
+      "q1_val": "KBくん",
       "q2_label": "自己紹介",
-      "q2_val": "自分マスコットとして泥臭く汗臭く頑張る次第で働いて働いて働いてまいります"
-    },
-    "back": {
-      "image": "https://kbperk.github.io/staff-kanri/staff2_back.jpg?v=1772199107662",
-      "q1_label": "裏の通り名",
-      "q1_val": "笹を食わへん猛獣",
-      "q2_label": "おふざけコメント",
-      "q2_val": "ワシかわいく見えるかもしれへんが焼酎とイカの塩辛が好きやねん\n米より酒派\nジーパンよう似合わん？ほっとけ"
+      "q2_val": "趣味はトランポリンと仮面ライダー\n今年の目標は－１０キロとウォールトランポリンのスキルアップ！頑張ります"
     }
   },
   {
@@ -41,7 +23,7 @@
     "front": {
       "image": "https://kbperk.github.io/staff-kanri/staff3_front.jpg?v=1772199109176",
       "q1_label": "キャッチコピー",
-      "q1_val": "笑顔は声から！この街の端まで届け！！\n「いこーぜ！！」",
+      "q1_val": "",
       "q2_label": "自己紹介",
       "q2_val": "いつもごひいきにありがとうございます\n縁があってこの地にトランポリンパークをオープンさせていただきました\n福山市民の運動不足を楽しく解消させるために全力でお仕事させていただきます！！"
     },
