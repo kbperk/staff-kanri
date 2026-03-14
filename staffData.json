@@ -19,20 +19,20 @@
   },
   {
     "id": 3,
-    "name": "店長",
+    "name": "ちび店長１号",
     "front": {
-      "image": "https://kbperk.github.io/staff-kanri/staff3_front.jpg?v=1772199109176",
+      "image": "https://kbperk.github.io/staff-kanri/staff3_front.jpg?v=1773464732204",
       "q1_label": "キャッチコピー",
       "q1_val": "",
       "q2_label": "自己紹介",
-      "q2_val": "いつもごひいきにありがとうございます\n縁があってこの地にトランポリンパークをオープンさせていただきました\n福山市民の運動不足を楽しく解消させるために全力でお仕事させていただきます！！"
+      "q2_val": "ちび店長出勤時はお得なイベント開催！\n皆様のご来店お待ちしております。"
     },
     "back": {
-      "image": "https://kbperk.github.io/staff-kanri/staff3_back.jpg?v=1772199115222",
-      "q1_label": "裏の通り名",
-      "q1_val": "元アフロビックヘッド",
-      "q2_label": "おふざけコメント",
-      "q2_val": "三度の飯よりトランポリンが好き\nってほどでもないくらい好き\n\nやっぱ上手い飯が一番でしょ！！"
+      "image": "https://kbperk.github.io/staff-kanri/staff3_back.jpg?v=1773464733034",
+      "q1_label": "キャラクター名",
+      "q1_val": "ユユ",
+      "q2_label": "自己紹介",
+      "q2_val": ""
     }
   }
 ]
