@@ -80,8 +80,29 @@
         .tap-hint { background: white; color: #333; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: bounce-soft 1.5s infinite; }
         @keyframes bounce-soft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-        .btn-back { position: fixed; bottom: 30px; right: 20px; background: #333; color: white; text-decoration: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; font-size: 1rem; box-shadow: 0 6px 15px rgba(0,0,0,0.3); z-index: 1000; display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
-        .btn-back:active { transform: scale(0.95); }
+        /* ▼ 修正箇所：ボタンの色・大きさ・配置を教室紹介ページと完全に統一 ▼ */
+        .btn-back { 
+            position: fixed; 
+            bottom: 25px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            color: #32D74B; 
+            background: #ffffff; 
+            border: 2px solid #32D74B; 
+            text-decoration: none; 
+            font-size: 1rem; 
+            font-weight: bold; 
+            padding: 10px 24px; 
+            border-radius: 30px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1000; 
+        }
+        .btn-back:active { 
+            background: #f0f0f0; 
+        }
 
         .page-title { position: absolute; top: 30px; left: 0; width: 100%; text-align: center; z-index: 100; pointer-events: none; }
 
@@ -92,7 +113,6 @@
             .carousel-drum { width: 85%; height: 520px; } 
             .staff-body { flex-direction: column; align-items: center; text-align: center; gap: 15px; padding: 15px 10px; }
             
-            /* 💡 修正：スマホでも丸くせず、PC同様に四角（角丸15px）で比率3:4のまま調整 */
             .staff-img-wrap { flex: 0 0 auto; width: 140px; height: auto; aspect-ratio: 3/4; border-radius: 15px; margin-top: 0; }
             
             .staff-text-wrap { width: 100%; gap: 12px; }
@@ -119,7 +139,7 @@
         </div>
     </div>
 
-    <a href="https://kbperk.github.io/main/" class="btn-back"><span>◀</span> メインに戻る</a>
+    <a href="https://kbperk.github.io/main/" class="btn-back">TOPに戻る</a>
 
     <script>
         const GITHUB_JSON_URL = "https://kbperk.github.io/staff-kanri/staffData.json"; 
@@ -262,7 +282,6 @@
             scene.addEventListener('touchmove', e => {
                 if(!isDragging) return;
                 const deltaY = e.touches[0].clientY - startY;
-                // 💡 修正： - を + に変更し、スワイプ方向を逆転（物理ローラーのような直感的な操作感に）
                 currentAngle = startAngle + (deltaY * 0.4); 
                 updateDrum();
             }, { passive: true });
@@ -280,7 +299,6 @@
             window.addEventListener('mousemove', e => {
                 if(!isDragging) return;
                 const deltaY = e.clientY - startY;
-                // 💡 修正： - を + に変更（マウス操作も逆転）
                 currentAngle = startAngle + (deltaY * 0.4);
                 updateDrum();
             });
@@ -290,7 +308,6 @@
             scene.addEventListener('wheel', e => {
                 if(e.target.closest('.js-prevent-scroll') && e.target.closest('.js-prevent-scroll').scrollHeight > e.target.closest('.js-prevent-scroll').clientHeight) return;
                 drum.classList.remove('is-snapping');
-                // 💡 修正： + を - に変更（PCのマウスホイールも逆転）
                 currentAngle -= e.deltaY * 0.1;
                 updateDrum();
                 clearTimeout(scene.wheelTimeout);
