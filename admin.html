@@ -15,21 +15,19 @@
         .side-box.front { border-top: 4px solid #3498db; }
         .side-box.back { border-top: 4px solid #e74c3c; }
         label { display: block; margin-top: 10px; font-weight: bold; font-size: 0.9em; }
-        input[type="text"], input[type="password"], textarea { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; }
+        input[type="text"], textarea { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; }
         textarea { resize: vertical; }
         .btn-fixed { position: fixed; bottom: 30px; right: 30px; background: #32D74B; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; transition: transform 0.2s; }
         .btn-fixed:hover { transform: scale(1.05); }
         .btn-fixed:disabled { background: #ccc; cursor: not-allowed; transform: none; }
-        #login-screen { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 10px; text-align: center; }
+        #loading-screen { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         #status-toast { position: fixed; bottom: 90px; right: 30px; background: white; padding: 10px 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); font-weight: bold; display: none; z-index: 999; }
     </style>
 </head>
 <body>
-    <div id="login-screen">
-        <h2>スタッフ管理 ログイン</h2>
-        <input type="password" id="auth-password" placeholder="パスワード(0126)" style="text-align:center;">
-        <button onclick="tryLogin()" style="margin-top:20px; padding:10px 20px; cursor:pointer;">ログイン</button>
-        <div id="login-msg" style="color:red; margin-top:10px;"></div>
+    <div id="loading-screen">
+        <h2>認証中...</h2>
+        <p style="color: #666; margin-top: 10px;">アクセスキーを確認しています</p>
     </div>
 
     <div id="main-interface" class="container">
@@ -44,31 +42,36 @@
     <script>
         const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxRq1sON5sPSuZVKV0kbAYBC8agDKw_jeEmH49V20S4WDGdXCvuEmfKvRbnfML2not1/exec";
 
+        // URLパラメータからkeyを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const MAGIC_KEY = urlParams.get('key');
+
         async function callApi(action, payload = {}) {
-            const pass = document.getElementById('auth-password').value;
+            if (!MAGIC_KEY) throw new Error("アクセスキーがありません。専用のURLからアクセスしてください。");
+
             const res = await fetch(GAS_API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action, auth: pass, payload })
+                body: JSON.stringify({ action, auth: MAGIC_KEY, payload })
             });
             const json = await res.json();
             if (!json.success) throw new Error(json.error);
             return json.data;
         }
 
-        async function tryLogin() {
-            const btn = document.querySelector('#login-screen button');
-            const msg = document.getElementById('login-msg');
-            msg.innerText = ""; btn.innerText = "認証中..."; btn.disabled = true;
-
+        async function init() {
+            const loading = document.getElementById('loading-screen');
             try {
                 const data = await callApi('getStaffData');
-                document.getElementById('login-screen').style.display = 'none';
+                
+                // 認証成功：URLバーからキーを消去し、画面を切り替え
+                history.replaceState(null, '', window.location.pathname);
+                loading.style.display = 'none';
                 document.getElementById('main-interface').style.display = 'block';
+                
                 createForm(data);
             } catch (err) { 
-                msg.innerText = err.message; 
-                btn.innerText = "ログイン"; btn.disabled = false;
+                loading.innerHTML = `<h2 style="color:red;">認証エラー</h2><p>${err.message}</p>`;
             }
         }
 
@@ -146,6 +149,9 @@
             
             setTimeout(() => { toast.style.display = "none"; }, 5000);
         }
+
+        // ページ読み込み時に自動でマジックリンク認証を実行
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
