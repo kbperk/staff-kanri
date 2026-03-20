@@ -39,8 +39,10 @@
         /* =====================================
            3Dロータリー（シリンダーカルーセル）
            ===================================== */
-        .scene { position: relative; width: 100vw; height: 100vh; perspective: 1500px; display: flex; justify-content: center; align-items: center; }
-        .carousel-drum { position: relative; width: 90%; max-width: 700px; height: 450px; transform-style: preserve-3d; transition: transform 0.1s; }
+        /* ▼ 修正箇所: heightを100dvhにし、padding-bottomで下部ボタンのスペースを確保 ▼ */
+        .scene { position: relative; width: 100vw; height: 100dvh; padding-bottom: 80px; perspective: 1500px; display: flex; justify-content: center; align-items: center; }
+        /* ▼ 修正箇所: PC版カードの高さも念のため可変(dvh)を考慮して安全に設定 ▼ */
+        .carousel-drum { position: relative; width: 90%; max-width: 700px; height: min(450px, 70dvh); transform-style: preserve-3d; transition: transform 0.1s; }
         .carousel-drum.is-snapping { transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
 
         .staff-card-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-style: preserve-3d; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: opacity 0.5s, filter 0.5s; }
@@ -80,7 +82,7 @@
         .tap-hint { background: white; color: #333; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: bounce-soft 1.5s infinite; }
         @keyframes bounce-soft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-        /* ▼ 修正箇所：ボタンの色・大きさ・配置を教室紹介ページと完全に統一 ▼ */
+        /* ▼ ボタンの色・大きさ・配置 ▼ */
         .btn-back { 
             position: fixed; 
             bottom: 25px; 
@@ -110,7 +112,8 @@
            📱 スマホ向けの超最適化レイアウト
            ===================================== */
         @media (max-width: 600px) {
-            .carousel-drum { width: 85%; height: 520px; } 
+            /* ▼ 修正箇所: スマホ版カードの高さを固定から「画面高さの70%まで」の可変に変更 ▼ */
+            .carousel-drum { width: 85%; height: min(520px, 70dvh); } 
             .staff-body { flex-direction: column; align-items: center; text-align: center; gap: 15px; padding: 15px 10px; }
             
             .staff-img-wrap { flex: 0 0 auto; width: 140px; height: auto; aspect-ratio: 3/4; border-radius: 15px; margin-top: 0; }
