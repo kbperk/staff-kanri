@@ -21,18 +21,18 @@
     "id": 3,
     "name": "ちび店長１号",
     "front": {
-      "image": "https://kbperk.github.io/staff-kanri/staff3_front.jpg?v=1773464732204",
+      "image": "https://kbperk.github.io/staff-kanri/staff3_front.jpg?v=1774071177876",
       "q1_label": "キャッチコピー",
-      "q1_val": "",
+      "q1_val": "今日もお客様の笑顔の為に\n神出鬼没の二人組",
       "q2_label": "自己紹介",
-      "q2_val": "ちび店長出勤時はお得なイベント開催！\n皆様のご来店お待ちしております。"
+      "q2_val": "ちび店長sが出勤日にはお得なイベント開催\nみなさま是非ご来店ください。"
     },
     "back": {
       "image": "https://kbperk.github.io/staff-kanri/staff3_back.jpg?v=1773464733034",
       "q1_label": "キャラクター名",
-      "q1_val": "ユユ",
+      "q1_val": "ユユ＆D５",
       "q2_label": "自己紹介",
-      "q2_val": ""
+      "q2_val": "しっかり者のお姉ちゃんととマイペースな\n弟。最近やっとトランポリンを練習するようになりました。"
     }
   }
 ]
